@@ -1,0 +1,50 @@
+.logo {
+  width: 95px;
+  height: 75px;
+  padding-right: 20px;
+}
+
+.active-menu {
+  color: #14bbbb !important;
+}
+
+a:hover {
+  color: #14bbbb !important;
+}
+
+.profile-photo {
+  width: 100px;
+  height: 100px;
+}
+
+.details {
+  padding: 1%;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #101111;
+}
+td {
+  cursor: pointer;
+}
+
+.highlight {
+  background-color: blue;
+  color: white;
+}
+
+.present-default,
+.absent-default {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+.present {
+  background-color: green;
+  color: white;
+}
+
+.absent {
+  background-color: rgb(255, 174, 0);
+  color: white;
+}
