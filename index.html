@@ -3,7 +3,7 @@ layout: default
 title: Attendance
 ---
 
-<div class="container">
+<div class="page-margin">
 
     <label for="stream">Select stream</label>
     <select name="stream" id="stream">
@@ -11,15 +11,22 @@ title: Attendance
         <option value="stream_a">Stream A</option>
         <option value="stream_b">Stream B</option>
     </select>
+    <button type="button" class="btn btn-sm tick">&#10004;</button>
+    <label id="present-count">0</label>
+    <button type="button" class="btn btn-sm cross">&#x2718;</button>
+    <label id="absent-count">0</label>
+    <div>
+        <button type="button" class="btn btn-sm select-all" id="select-all">Select All</button>
+    </div>
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-9 scrollable">
             <table data-role="table" data-mode="columntoggle" class="ui-responsive" id="students">
                 <thead>
                     <tr>
                         <th data-priority="1">Sl.No</th>
                         <th data-priority="2">Name</th>
-                        <th data-priority="3">Marking</th>
-                        <th data-priority="4">Atten. history</th>
+                        <th data-priority="3">Marking(&#10004;/&#x2718;)</th>
+                        <th data-priority="4">Attendance History</th>
                     </tr>
                 </thead>
                 <tbody id="students-list">
@@ -27,20 +34,22 @@ title: Attendance
                 </tbody>
             </table>
         </div>
-        <div class="details col-md-3">
+        <div class="details col-md-3 scrollable">
             <img src="./assets/images/No-Image-available.png" alt="Profile photo" class="profile-photo">
-            <label><strong>Name</strong></label>
-            <p id="name"></p>
-            <label><strong>ID</strong></label>
-            <p id="id"></p>
-            <label><strong>Email</strong></label>
-            <p id="email"></p>
-            <label><strong>Phone</strong></label>
-            <p id="phone"></p>
-            <label><strong>Address</strong></label>
-            <p id="address"></p>
-            <label><strong>Ethnicity</strong></label>
-            <p id="ethnicity"></p>
+            <div>
+                <label><strong>Name</strong></label>
+                <p id="name"></p>
+                <label><strong>ID</strong></label>
+                <p id="id"></p>
+                <label><strong>Email</strong></label>
+                <p id="email"></p>
+                <label><strong>Phone</strong></label>
+                <p id="phone"></p>
+                <label><strong>Address</strong></label>
+                <p id="address"></p>
+                <label><strong>Ethnicity</strong></label>
+                <p id="ethnicity"></p>
+            </div>
         </div>
     </div>
 </div>
