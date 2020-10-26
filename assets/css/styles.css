@@ -29,8 +29,8 @@ td {
 }
 
 .highlight {
-  background-color: blue;
-  color: white;
+  background-color: #c2dbff;
+  color: #202124;
 }
 
 .marking-default {
@@ -70,4 +70,11 @@ td {
 .select-all {
   background-color: rgb(13, 93, 168);
   color: white;
+}
+
+.select-all-box {
+  box-sizing: border-box;
+  width: 15px;
+  height: 15px;
+  margin: 5px;
 }

@@ -23,7 +23,7 @@ $(document).ready(function () {
             });
             filteredStudents = students;
             addStream();
-            populateStudents(students);
+            populateStudents(students, false);
             filterStudents();
             selectAllStudents();
         });
@@ -57,22 +57,30 @@ $(document).ready(function () {
         })
     }
     // Displaying students in table
-    function populateStudents(filteredStudents) {
+    function populateStudents(filteredStudents, callingFromSave) {
         let studentsList = '';
+
         filteredStudents.forEach((student, index) => {
             let attendanceHistory = '';
             let markingPresentClass = '';
             let markingAbsentClass = '';
-            if (student.marking === 'p') {
-                markingPresentClass = 'present';
-            } else {
+            if (callingFromSave) {
                 markingPresentClass = 'marking-default';
-            }
-            if (student.marking === 'a') {
-                markingAbsentClass = 'absent';
-            } else {
                 markingAbsentClass = 'marking-default';
+            } else {
+
+                if (student.marking === 'p') {
+                    markingPresentClass = 'present';
+                } else {
+                    markingPresentClass = 'marking-default';
+                }
+                if (student.marking === 'a') {
+                    markingAbsentClass = 'absent';
+                } else {
+                    markingAbsentClass = 'marking-default';
+                }
             }
+
             let attendanceMarking = '<button type="button" class="btn btn-sm tickMark ' + markingPresentClass + '">&#10004;</button>' + ' ' + '<button type="button" class="btn btn-sm crossMark ' + markingAbsentClass + '">&#x2718;</button>';
             student.attendance.forEach(marking => {
                 attendanceHistory += '<button type="button" class="btn btn-sm">' + marking + '</button>';
@@ -81,6 +89,7 @@ $(document).ready(function () {
                 + '<td>' + attendanceMarking + '</td>'
                 + '<td>' + attendanceHistory + '</td>'
                 + '</tr>';
+
         });
         $('#select-all').addClass('select-all');
         $("#students-list").html(studentsList);
@@ -158,6 +167,32 @@ $(document).ready(function () {
             querySelector.siblings().removeClass('present').addClass('marking-default');
         }
     }
+
+    // Save button click
+    $('#save').click(function () {
+        saveMarking();
+    })
+    // Save marking
+    function saveMarking() {
+
+        students.forEach(student => {
+            student.attendance.push(student.marking);
+        });
+        populateStudents(filteredStudents, true);
+        // set marking as 'n'.
+        students.forEach(student => {
+            student.marking = 'n';
+        });
+        $('#students-list').find('tr').each(function () {
+            $(this).find('.tickMark').removeClass('present').addClass('marking-default');
+            $(this).find('.crossMark').removeClass('absent').addClass('marking-default');
+        });
+        $('#present-count').html('0');
+        $('#absent-count').html('0');
+        presentCount = 0;
+        absentCount = 0;
+    }
+
     // Clicking a student row in students list table
     function selectStudent() {
         $('.student').click(function () {
@@ -167,6 +202,7 @@ $(document).ready(function () {
             let activeStudent = students.filter(x => x.id == activeStudentId);    // Filtering the element from students array
             studentDetails(activeStudent);
             $('#select-all').addClass('select-all');
+            allSelected = false;
         });
     }
 
@@ -201,7 +237,7 @@ $(document).ready(function () {
                     filteredStudents.push(student);
                 }
             });
-            populateStudents(filteredStudents);
+            populateStudents(filteredStudents, false);
             clearStudentDetails();
         });
     }
