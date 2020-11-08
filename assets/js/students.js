@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    console.log("==============");
+
     let allStudents = [];
     let filteredClassStudents = [];
     let classArray = [];
@@ -24,12 +24,10 @@ $(document).ready(function () {
         attendanceMarkingDropdown += '<option value="' + key + '">' + markingDropdownItems[key] + '</option>'
     });
 
-
-
     let weeks = '';
     for (let i = 0; i <= 16; i++) { // considering 16 weeks
         if (i !== 0) {
-            weeks += '<option value="' + i + '">Week' + i + '</option>'
+            weeks += '<option value="Week ' + i + '">Week ' + i + '</option>'
         } else {
             weeks += '<option value="select">--Select--</option>'
         }
@@ -37,11 +35,19 @@ $(document).ready(function () {
     }
     $('#select-week').html(weeks);
 
-    let classRow = '';
+    let classNumbersRow = '';
+    let weekNumber = 0;
+    let sessionNumber = '';
     for (let i = 1; i <= 32; i++) {
-        classRow += '<td class="class-number-rows" title="Class ' + i + '"><label>' + i + '</label></td>';
+        if (i % 2 === 1) {
+            weekNumber++;
+            sessionNumber = 1;
+        } else {
+            sessionNumber = 2;
+        }
+        classNumbersRow += '<td class="class-number-rows" data-placement="bottom" title="Week ' + weekNumber + ' Session ' + sessionNumber + '"><label>' + i + '</label></td>';
     }
-    $('#class-number-rows').html(classRow);
+    $('#class-number-rows').html(classNumbersRow);
 
     // Get students data from the given API
     fetch('https://gist.githubusercontent.com/eallenOP/b40fa9bba517ff258da395c79edd2477/raw')
@@ -97,25 +103,33 @@ $(document).ready(function () {
         dropDownMarking();
     });
 
-    // Change class number on drop down list
+    // Change session on drop down list
     $('#select-session').change(function () {
         selectSession();
+        filterStudents();
     });
 
     // Change Week number
     $('#select-week').change(function () {
         selectWeek();
+        filterStudents();
     });
 
     // Change stream
     $('#stream').change(function () {
         filterStudents();
+
     });
 
     //Select All checkbox hovering
     $('#selectAll').tooltip({
         trigger: 'hover'
-    });
+    }).css('cursor', 'pointer');
+
+    //Attendance history class numbers hovering
+    $('.class-number-rows').tooltip({
+        trigger: 'hover'
+    }).css('cursor', 'pointer');
 
 
     //Select All checkbox click
@@ -198,11 +212,9 @@ $(document).ready(function () {
     // Select class number on drop down list
     function selectSession() {
         if (filteredClassStudents[0].attendance[$('#select-session').val() - 1]) {
-            populateStudents(filteredClassStudents, true);
-
+            populateStudents(filteredClassStudents);
         } else {
-            populateStudents(filteredClassStudents, false);
-
+            populateStudents(filteredClassStudents);
         }
     }
 
@@ -217,43 +229,105 @@ $(document).ready(function () {
         };
 
         allStudents.forEach((student, index) => {
-            student.marking = 'n';  // add new key:value pair to store marking attendance. By default it is 'n' => 'no marking'
+            student.marking = 'n';  // add new key:value pair to store marking attendance. By default it is 'n' => 'not required'
             student.history = [];
-
+            student.attendanceHistory = [];
+            let weekNumber = 0;
+            for (let i = 0; i < 32; i++) {
+                let classNumber = '';
+                if (i % 2 == 0) {
+                    classNumber = 'Week ' + ++weekNumber + ' ' + 'Session 1';
+                } else {
+                    classNumber = 'Week ' + weekNumber + ' ' + 'Session 2';
+                }
+                student.attendanceHistory.push({
+                    'class': classNumber,
+                    'mark': ''
+                });
+            }
             if (index % 2 == 0) {
                 student.stream = 'stream_a';
-                let weekNumber = 0;
                 student.attendance.forEach((attendance, index) => {
-                    if (index % 2 == 0) {
-                        student.history.push('week' + ++weekNumber + ' ' + 'class1');
-                    } else {
-                        student.history.push('week' + weekNumber + ' ' + 'class2');
-                    }
                     if (attendance === 'p') {
-                        student.attendance[index] = 'P1';
+                        student.attendanceHistory[index].mark = 'P1';
+                    } else {
+                        student.attendanceHistory[index].mark = attendance;
                     }
                 });
             } else {
                 student.stream = 'stream_b';
-                let weekNumber = 0;
                 student.attendance.forEach((attendance, index) => {
-                    if (index % 2 == 0) {
-                        student.history.push('week' + ++weekNumber + ' ' + 'class1');
-                    } else {
-                        student.history.push('week' + weekNumber + ' ' + 'class2');
-                    }
                     if (attendance === 'p') {
-                        student.attendance[index] = 'P2';
+                        student.attendanceHistory[index].mark = 'P2';
+                    } else {
+                        student.attendanceHistory[index].mark = attendance;
                     }
                 });
             }
-            // console.log(student.history);
         });
 
     }
 
+    //Edit students marking
+    function editStudentsMarking(students) {
+        presentCount = 0;
+        absentCount = 0;
+        $("table > tbody > tr").each(function () {
+            let markingPresentClass = 'marking-default';
+            let markingAbsentClass = 'marking-default';
+            let activeStudentId = $(this).data('id');
+            let activeStudent = students.filter(x => x.id == activeStudentId);
+            let currentSession = $('#select-week').val() + ' ' + $('#select-session').val();
+            let indexNumber = findIndex(activeStudent[0].attendanceHistory, 'class', currentSession);
+            if ($('#select-week').val() !== 'select') {
+                switch (activeStudent[0].attendanceHistory[indexNumber].mark) {
+                    case 'p':
+                        markingPresentClass = 'present';
+                        presentCount++;
+                        $(this).find('.dropDownMarking').val('p');
+                        break;
+                    case 'P1':
+                        markingPresentClass = 'present';
+                        presentCount++;
+                        $(this).find('.dropDownMarking').val('p');
+                        break;
+                    case 'P2':
+                        markingPresentClass = 'present';
+                        presentCount++;
+                        $(this).find('.dropDownMarking').val('p');
+                        break;
+                    case 'a':
+                        markingAbsentClass = 'absent';
+                        $(this).find('.dropDownMarking').val('a');
+                        absentCount++;
+                        break;
+                    case 's':
+                        $(this).find('.dropDownMarking').val('s');
+                        break;
+                    case 'e':
+                        $(this).find('.dropDownMarking').val('e');
+                        break;
+                    case 'l':
+                        $(this).find('.dropDownMarking').val('l');
+                        break;
+                    case 'c':
+                        $(this).find('.dropDownMarking').val('c');
+                        break;
+                    default:
+                        $(this).find('.dropDownMarking').val('n');
+                        break;
+                }
+            }
+
+            $(this).find('.tickMark').addClass(markingPresentClass);
+            $(this).find('.crossMark').addClass(markingAbsentClass);
+        });
+        $('#present-count').text(presentCount);
+        $('#absent-count').text(absentCount);
+    }
+
     // Displaying students in table
-    function populateStudents(filteredStudents, callingFromSave) {
+    function populateStudents(filteredStudents) {
         let studentsList = '';
         presentCount = 0;
         absentCount = 0;
@@ -262,22 +336,7 @@ $(document).ready(function () {
             let markingPresentClass = 'marking-default';
             let markingAbsentClass = 'marking-default';
             let disabledProp = '';
-            if (isWeekValid) {
-                if (!callingFromSave) {
-                    if (student.attendance[0] === 'P1' || student.attendance[0] === 'P2') {
-                        markingPresentClass = 'present';
-                        presentCount++;
-                    } else {
-                        markingPresentClass = 'marking-default';
-                    }
-                    if (student.marking === 'a' || student.attendance[0] === 'a') {
-                        markingAbsentClass = 'absent';
-                        absentCount++;
-                    } else {
-                        markingAbsentClass = 'marking-default';
-                    }
-                }
-            } else {
+            if (!isWeekValid) {
                 disabledProp = 'disabled';
             }
 
@@ -287,18 +346,47 @@ $(document).ready(function () {
                 + '"' + disabledProp + '>&#x2718;</button>'
                 + '&nbsp;<select class="dropDownMarking"' + disabledProp + '>' + attendanceMarkingDropdown + '</select>';
 
-            student.attendance.forEach((attendance, index) => {
+            student.attendanceHistory.forEach((attendance, index) => {
                 let markingClass = '';
-                if (attendance === 'p' || attendance === 'P1' || attendance === 'P2') {
-                    markingClass = 'present';
-                } else if (attendance === 'a') {
-                    markingClass = 'absent';
-                } else {
-                    markingClass = 'marking-default';
+                switch (attendance.mark) {
+                    case 'p':
+                        markingClass = 'present';
+                        break;
+                    case 'P1':
+                        markingClass = 'present';
+                        break;
+                    case 'P2':
+                        markingClass = 'present';
+                        break;
+                    case 'a':
+                        markingClass = 'absent';
+                        break;
+                    case 'n':
+                        markingClass = 'marking-default';
+                        break;
+                    case 's':
+                        markingClass = 'marking-default';
+                        break;
+                    case 'e':
+                        markingClass = 'marking-default';
+                        break;
+                    case 'l':
+                        markingClass = 'marking-default';
+                        break;
+                    case 'c':
+                        markingClass = 'marking-default';
+                        break;
+                    default:
+                        markingClass = '';
+                        break;
                 }
-                attendanceHistory += '<td><label class="history ' + markingClass + '">' + student.attendance[index] + '</label></td>';
+                attendanceHistory += '<td><label class="history ' + markingClass + '">'
+                    + student.attendanceHistory[index].mark + '</label></td>';
             });
-            studentsList += '<tr class="student" data-id="' + student.id + '"><td><input class="student-checkbox" type="checkbox" disabled></td><th scope="row">' + (index + 1) + '</th>' + '<td>' + student.name.first + ' ' + student.name.last + '</td>'
+            studentsList += '<tr class="student" data-id="' + student.id + '">'
+                + '<td><input class="student-checkbox" type="checkbox" disabled></td>'
+                + '<th scope="row">' + (index + 1) + '</th>'
+                + '<td>' + student.name.first + ' ' + student.name.last + '</td>'
                 + '<td class="marking-td">' + attendanceMarking + '</td>'
                 + attendanceHistory
                 + '</tr>';
@@ -306,6 +394,7 @@ $(document).ready(function () {
         });
         $('#select-all').addClass('select-all');
         $("#students-list").html(studentsList);
+
         selectStudent();
         markingStudent();
         $('#present-count').text(presentCount);
@@ -498,10 +587,24 @@ $(document).ready(function () {
     // Save marking
     function saveMarking() {
         filteredClassStudents.forEach(student => {
-            student.attendance.push(student.marking);
+            if (student.marking === 'p') {
+                if (student.stream === 'stream_a') {
+                    student.marking = 'P1';
+                } else {
+                    student.marking = 'P2';
+                }
+            }
+            let currentSession = $('#select-week').val() + ' ' + $('#select-session').val();
+            let indexNumber = findIndex(student.attendanceHistory, 'class', currentSession);
+            student.attendanceHistory[indexNumber].mark = student.marking;  //Save marking to the selected class session.
         });
-        populateStudents(filteredClassStudents, true);
-        // set marking as 'n'.
+        populateStudents(filteredClassStudents);
+        resetStudentsTable();
+    }
+
+    //Reset students list table
+    function resetStudentsTable() {
+        // set marking as 'n'to reset students list in table.
         filteredClassStudents.forEach(student => {
             student.marking = 'n';
         });
@@ -519,7 +622,15 @@ $(document).ready(function () {
         $('#radioGroupMarking').hide();
         dropDownMarking();
     }
-
+    //Find index of the current session
+    function findIndex(array, attr, value) {
+        for (var i = 0; i < array.length; i += 1) {
+            if (array[i][attr] === value) {
+                return i;
+            }
+        }
+        return -1;
+    }
     // Clicking a student row in students list table
     function selectStudent() {
         $('.student').click(function () {
@@ -562,7 +673,8 @@ $(document).ready(function () {
                 filteredStreamStudents.push(student);
             }
         });
-        populateStudents(filteredStreamStudents, false);
+        populateStudents(filteredStreamStudents);
+        editStudentsMarking(filteredStreamStudents);
         clearStudentDetails();
     }
 
