@@ -56,8 +56,9 @@ title: Attendance
                 <button type="button" class="btn btn-sm save-disabled ml-3" id="save">Save</button>
             </div>
         </div>
-
-        <div class="row mt-2">
+        <div class="valid-week col-sm-6" id="valid-week-message">Select valid week to proceed</div>
+        <div class="success-message col-sm-6" style="display:none;" id="success-message">Successfully saved attendances</div>
+        <div class="row mt-2 contents">
             <div class="col-md-9 scrollable">
                 <table tabindex='0' data-role="table" data-mode="columntoggle" class="ui-responsive" id="students">
                     <thead>

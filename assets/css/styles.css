@@ -53,9 +53,19 @@ td {
 }
 
 .scrollable {
-  height: 420px;
+  height: 800px;
   overflow: auto;
 }
+
+.valid-week {
+background-color: #ff8c84;
+color: #3e1403;
+}
+
+.success-message {
+  background-color: #6ee782;
+  color: #3e1403;
+  }
 
 .page-margin {
   margin: 10px 30px 0px 10px;

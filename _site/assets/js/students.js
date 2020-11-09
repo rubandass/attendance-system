@@ -68,6 +68,7 @@ $(document).ready(function () {
             selectSession();
             selectWeek();
             dropDownMarking();
+
         });
 
 
@@ -187,6 +188,10 @@ $(document).ready(function () {
     // Select Week number
     function selectWeek() {
         if ($('#select-week').val() === 'select') {
+            setTimeout(function(){
+                $('#valid-week-message').show();
+            },2000);
+            
             isWeekValid = false;
             $('.marking-td .tickMark').prop('disabled', true);
             $('.marking-td .crossMark').prop('disabled', true);
@@ -199,6 +204,7 @@ $(document).ready(function () {
             $('.student').removeClass('highlight');
             $('#selectAllMarking').hide();
         } else {
+            $('#valid-week-message').hide();
             isWeekValid = true;
             $('.marking-td .tickMark').prop('disabled', false);
             $('.marking-td .crossMark').prop('disabled', false);
@@ -598,6 +604,11 @@ $(document).ready(function () {
             let indexNumber = findIndex(student.attendanceHistory, 'class', currentSession);
             student.attendanceHistory[indexNumber].mark = student.marking;  //Save marking to the selected class session.
         });
+
+        $('#success-message').fadeIn("fast", function(){        
+            $("#success-message").fadeOut(2000); // hide success message after some time.
+        });
+
         populateStudents(filteredClassStudents);
         resetStudentsTable();
     }
