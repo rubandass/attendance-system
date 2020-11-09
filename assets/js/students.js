@@ -272,7 +272,7 @@ $(document).ready(function () {
     function editStudentsMarking(students) {
         presentCount = 0;
         absentCount = 0;
-        $("table > tbody > tr").each(function () {
+        $('#students-list').find('tr').each(function () {
             let markingPresentClass = 'marking-default';
             let markingAbsentClass = 'marking-default';
             let activeStudentId = $(this).data('id');
