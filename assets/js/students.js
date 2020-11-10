@@ -439,13 +439,14 @@ $(document).ready(function () {
         if (activeStudent.marking === 'p') {
             activeStudent.marking = marking;
             $('#present-count').text(--presentCount);
-            thisElement.closest('tr').find('.tickMark').removeClass('present').addClass('marking-default');
         } else if (activeStudent.marking === 'a') {
             activeStudent.marking = marking;
             $('#absent-count').text(--absentCount);
-            thisElement.closest('tr').find('.crossMark').removeClass('absent').addClass('marking-default');
         } else {
+            
             activeStudent.marking = marking;
+            thisElement.closest('tr').find('.tickMark').removeClass('present').addClass('marking-default');
+            thisElement.closest('tr').find('.crossMark').removeClass('absent').addClass('marking-default');
         }
     }
 
