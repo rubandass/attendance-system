@@ -53,7 +53,7 @@ td {
 }
 
 .scrollable {
-  height: 785px;
+  height: 925px;
   overflow: auto;
 }
 
@@ -167,7 +167,7 @@ td {
   z-index: 1;
   top: 90px;
   left: 1px;
-  background-color: #389ff3;
+  background-color: #62ace8;
   color: white;
   overflow-x: hidden;
   padding-top: 20px;
@@ -175,7 +175,7 @@ td {
 }
 
 .bg-light {
-  background-color: #91c7f3!important;
+  background-color: #389ff3!important;
 }
 
 .main {

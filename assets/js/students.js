@@ -67,12 +67,9 @@ $(document).ready(function () {
                 classArray.push(student.class);
             });
             classDropDown();
-            // allStudents = students;
             console.log(allStudents.length);
             filteredClassStudents = filterClassStudents(students);
             addStream();
-            // filterStudents();
-            // selectAllStudents();
             selectSession();
             selectWeek();
 
