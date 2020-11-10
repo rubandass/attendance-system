@@ -5,12 +5,12 @@
 }
 
 .active-menu {
-  color: #2196f3 !important;
+  color: #063356 !important;
   font-weight: bold;
 }
 
 a:hover {
-  color: #2196f3 !important;
+  color:#063356 !important;
   font-weight: bold;
 }
 
@@ -53,13 +53,18 @@ td {
 }
 
 .scrollable {
-  height: 800px;
+  height: 785px;
   overflow: auto;
 }
 
 .valid-week {
 background-color: #ff8c84;
 color: #3e1403;
+}
+
+div img {
+  display:block;
+  margin:auto;
 }
 
 .success-message {
@@ -92,6 +97,11 @@ color: #3e1403;
 
 .select-all-cancel {
   background-color: rgb(233, 156, 13);
+  color: white;
+}
+
+.reset-all {
+  background-color: rgb(57, 58, 57);
   color: white;
 }
 
@@ -157,11 +167,15 @@ td {
   z-index: 1;
   top: 90px;
   left: 1px;
-  background-color: #2196f3;
+  background-color: #389ff3;
   color: white;
   overflow-x: hidden;
   padding-top: 20px;
   padding-left: 5px;
+}
+
+.bg-light {
+  background-color: #91c7f3!important;
 }
 
 .main {
@@ -169,6 +183,11 @@ td {
   font-size: 16px;
   padding-top: 5.5rem;
   padding-left: 10px;
+}
+
+.about {
+  margin-left: 120px;
+  padding-top: 6.5rem;
 }
 
 @media screen and (max-height: 450px) {

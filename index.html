@@ -36,19 +36,30 @@ title: Attendance
     </div>
     <div class="main">
 
+        <div class="valid-week col-sm-3" id="valid-week-message">Select valid week to proceed</div>
+        <div class="success-message col-sm-3" style="display:none;" id="success-message">Successfully saved attendances
+        </div>
 
         <div class="row">
-            <input class="select-all-box select-all" type="checkbox" name="selectAll" id="selectAll"
-                data-placement="bottom" title="Select All" disabled>
-            <div class="select-all-marking-toolbar" style="display:none;" id="selectAllMarking">
-                <button type="button" class="btn btn-sm select-all-tick" id="select-all-tick">&#x2713;&nbsp;Present
+            <!-- <input class="select-all-box select-all" type="checkbox" name="selectAll" id="selectAll"
+                data-placement="bottom" title="Select All" disabled> -->
+            <div class="select-all-marking-toolbar" id="selectAllMarking">
+                <button type="button" class="btn btn-sm select-all-tick" disabled
+                    id="select-all-tick">&#x2713;&nbsp;Present
                     All</button>
-                <button type="button" class="btn btn-sm select-all-cross" id="select-all-cross">&#x2718;&nbsp;Absent
+                <button type="button" class="btn btn-sm select-all-cross" disabled
+                    id="select-all-cross">&#x2718;&nbsp;Absent
                     All</button>
-                <button type="button" class="btn btn-sm select-all-cancel" id="select-all-cancel">&#126;&nbsp;Cancelled
+                <button type="button" class="btn btn-sm select-all-cancel" disabled
+                    id="select-all-cancel">&#126;&nbsp;Cancelled
                 </button>
+
             </div>
+
             <div class="offset-sm-4">
+                <button type="button" class="btn btn-sm reset-all" id="reset-all">Cancel Selection
+                </button>
+                &nbsp;&nbsp;
                 <button type="button" class="btn btn-sm tick">&#x2713;</button>
                 <label id="present-count">0</label>
                 <button type="button" class="btn btn-sm cross">&#x2718;</button>
@@ -56,14 +67,12 @@ title: Attendance
                 <button type="button" class="btn btn-sm save-disabled ml-3" id="save">Save</button>
             </div>
         </div>
-        <div class="valid-week col-sm-6" id="valid-week-message">Select valid week to proceed</div>
-        <div class="success-message col-sm-6" style="display:none;" id="success-message">Successfully saved attendances</div>
+
         <div class="row mt-2 contents">
             <div class="col-md-9 scrollable">
                 <table tabindex='0' data-role="table" data-mode="columntoggle" class="ui-responsive" id="students">
                     <thead>
                         <tr>
-                            <th rowspan="2"></th>
                             <th rowspan="2" data-priority="1">Sl.No</th>
                             <th rowspan="2" data-priority="2">Name</th>
                             <th rowspan="2" data-priority="3" class="markingElements">Marking(&#x2713;/&#x2718;)</th>

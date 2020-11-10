@@ -8,6 +8,7 @@ $(document).ready(function () {
     let isWeekValid = false;
     let selectAllTick = false;
     let selectAllCross = false;
+    isSaved = false;
     let attendanceMarkingDropdown = '';
     let markingDropdownItems = {
         'n': 'N (Not Required)',
@@ -54,12 +55,19 @@ $(document).ready(function () {
         .then(response => response.json())
         .then(data => {
             let students = [];
-            data.forEach(student => {
-                students.push(student);
+            let _students = localStorage.getItem('students');
+            if (_students === null) {
+                localStorage.setItem("students", JSON.stringify(data));
+            }
+            students = JSON.parse(localStorage.getItem('students'));
+
+            
+            students.forEach(student => {
+                allStudents.push(student);
                 classArray.push(student.class);
             });
             classDropDown();
-            allStudents = students;
+            // allStudents = students;
             console.log(allStudents.length);
             filteredClassStudents = filterClassStudents(students);
             addStream();
@@ -67,7 +75,6 @@ $(document).ready(function () {
             // selectAllStudents();
             selectSession();
             selectWeek();
-            dropDownMarking();
 
         });
 
@@ -108,24 +115,22 @@ $(document).ready(function () {
     $('#select-session').change(function () {
         selectSession();
         filterStudents();
+        dropDownMarking();
     });
 
     // Change Week number
     $('#select-week').change(function () {
         selectWeek();
         filterStudents();
+        dropDownMarking();
     });
 
     // Change stream
     $('#stream').change(function () {
         filterStudents();
+        dropDownMarking();
 
     });
-
-    //Select All checkbox hovering
-    $('#selectAll').tooltip({
-        trigger: 'hover'
-    }).css('cursor', 'pointer');
 
     //Attendance history class numbers hovering
     $('.class-number-rows').tooltip({
@@ -134,17 +139,8 @@ $(document).ready(function () {
 
 
     //Select All checkbox click
-    $('#selectAll').click(function () {
-        if ($('#selectAll').is(':checked')) {
-            $('#selectAllMarking').show();
-            selectAllTick = false;
-            $('.student-checkbox').prop('checked', true);
-            $('.student').addClass('highlight');
-        } else if ($('#selectAll').is(':not(:checked)')) {
-            $('.student-checkbox').prop('checked', false);
-            $('.student').removeClass('highlight');
-            $('#selectAllMarking').hide();
-        }
+    $('#reset-all').click(function () {
+        resetStudentsTable();
         clearStudentDetails();
     })
 
@@ -188,21 +184,24 @@ $(document).ready(function () {
     // Select Week number
     function selectWeek() {
         if ($('#select-week').val() === 'select') {
-            setTimeout(function(){
+            if (isSaved) {
+                setTimeout(function () {
+                    $('#valid-week-message').show();
+                }, 2000);
+            } else {
                 $('#valid-week-message').show();
-            },2000);
-            
+            }
+
             isWeekValid = false;
             $('.marking-td .tickMark').prop('disabled', true);
             $('.marking-td .crossMark').prop('disabled', true);
             $('.dropDownMarking').prop('disabled', true);
             $('#save').removeClass('save').addClass('save-disabled');
+            $('#select-all-tick').prop('disabled', true);
+            $('#select-all-cross').prop('disabled', true);
+            $('#select-all-cancel').prop('disabled', true);
             $('#save').prop('disabled', true);
-            $('#selectAll').prop('disabled', true);
-            $('#selectAll').prop('checked', false);
-            $('.student-checkbox').prop('checked', false);
             $('.student').removeClass('highlight');
-            $('#selectAllMarking').hide();
         } else {
             $('#valid-week-message').hide();
             isWeekValid = true;
@@ -210,8 +209,10 @@ $(document).ready(function () {
             $('.marking-td .crossMark').prop('disabled', false);
             $('.dropDownMarking').prop('disabled', false);
             $('#save').removeClass('save-disabled').addClass('save');
+            $('#select-all-tick').prop('disabled', false);
+            $('#select-all-cross').prop('disabled', false);
+            $('#select-all-cancel').prop('disabled', false);
             $('#save').prop('disabled', false);
-            $('#selectAll').prop('disabled', false);
         }
     }
 
@@ -291,6 +292,8 @@ $(document).ready(function () {
                         markingPresentClass = 'present';
                         presentCount++;
                         $(this).find('.dropDownMarking').val('p');
+
+                        markingPresent($(this).closest('tr').find('.tickMark'), $(this).closest('tr'));
                         break;
                     case 'P1':
                         markingPresentClass = 'present';
@@ -390,7 +393,6 @@ $(document).ready(function () {
                     + student.attendanceHistory[index].mark + '</label></td>';
             });
             studentsList += '<tr class="student" data-id="' + student.id + '">'
-                + '<td><input class="student-checkbox" type="checkbox" disabled></td>'
                 + '<th scope="row">' + (index + 1) + '</th>'
                 + '<td>' + student.name.first + ' ' + student.name.last + '</td>'
                 + '<td class="marking-td">' + attendanceMarking + '</td>'
@@ -467,7 +469,7 @@ $(document).ready(function () {
 
         if (selectAllTick) {
             if (thisElement.find('.dropDownMarking').val() === 'p') {
-
+                activeStudent.marking = 'p';
             } else {
                 thisElement.find('.dropDownMarking').val('p');
                 activeStudent.marking = 'p';
@@ -500,7 +502,7 @@ $(document).ready(function () {
 
         if (selectAllCross) {
             if (thisElement.find('.dropDownMarking').val() === 'a') {
-
+                activeStudent.marking = 'a';
             } else {
                 thisElement.find('.dropDownMarking').val('a');
                 activeStudent.marking = 'a';
@@ -592,7 +594,7 @@ $(document).ready(function () {
 
     // Save marking
     function saveMarking() {
-        filteredClassStudents.forEach(student => {
+        filteredClassStudents.forEach((student, index) => {
             if (student.marking === 'p') {
                 if (student.stream === 'stream_a') {
                     student.marking = 'P1';
@@ -602,13 +604,13 @@ $(document).ready(function () {
             }
             let currentSession = $('#select-week').val() + ' ' + $('#select-session').val();
             let indexNumber = findIndex(student.attendanceHistory, 'class', currentSession);
-            student.attendanceHistory[indexNumber].mark = student.marking;  //Save marking to the selected class session.
+            filteredClassStudents[index].attendanceHistory[indexNumber].mark = student.marking;  //Save marking to the selected class session.
         });
-
-        $('#success-message').fadeIn("fast", function(){        
+        localStorage.setItem("students", JSON.stringify(allStudents));
+        $('#success-message').fadeIn("fast", function () {
             $("#success-message").fadeOut(2000); // hide success message after some time.
         });
-
+        isSaved = true;
         populateStudents(filteredClassStudents);
         resetStudentsTable();
     }
@@ -629,7 +631,7 @@ $(document).ready(function () {
         absentCount = 0;
         $('#select-week').val('select');
         selectWeek();
-        $('#selectAll').prop('checked', false);
+        // $('#selectAll').prop('checked', false);
         $('#radioGroupMarking').hide();
         dropDownMarking();
     }

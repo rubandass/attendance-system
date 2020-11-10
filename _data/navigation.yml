@@ -1,6 +1,4 @@
 - name: Home
   link: /
-- name: Documentation
-  link: /documentation.html
 - name: About Us
   link: /about.html
